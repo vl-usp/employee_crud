@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 
-class CrudController extends Controller
+class EmployeeController extends Controller
 {
     /**
      * Display a listing of the resource.

@@ -29,7 +29,10 @@ class EmployeeResource extends JsonResource
             "id" => $this->id,
             "fio" => $this->fio,
             "phone" => $this->phone,
-            "department" => $this->department["title"],
+            "department" => [
+                "id" => $this->department["id"],
+                "title" => $this->department["title"],
+            ],
             "position" => $this->position["title"],
             "boss" => $this->boss["fio"],
         ];

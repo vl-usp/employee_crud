@@ -14,22 +14,36 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['namespace' => 'API'], function () {
-    Route::group(['prefix' => '/crud'], function () {
-        Route::get('/index', 'CrudController@index')
-            ->name('crud.index');
+    Route::group(['prefix' => '/employee'], function () {
+        Route::get('/index', 'EmployeeController@index')
+            ->name('employee.index');
 
-        Route::patch('/store', 'CrudController@store')
-            ->name('crud.store');
+        Route::get('/index/{department_id}', 'EmployeeController@index')
+            ->name('employee.indexByDepartment');
 
-        Route::patch('/update/{id}', 'CrudController@update')
-            ->name('crud.update');
+        Route::patch('/store', 'EmployeeController@store')
+            ->name('employee.store');
 
-        Route::delete('/destroy/{id}', 'CrudController@destroy')
-            ->name('crud.destroy');
+        Route::patch('/update/{id}', 'EmployeeController@update')
+            ->name('employee.update');
+
+        Route::delete('/destroy/{id}', 'EmployeeController@destroy')
+            ->name('employee.destroy');
+
+    });
+
+    Route::group(['prefix' => '/department'], function() {
+        Route::get('/index', 'DepartmentController@index')
+            ->name('department.index');
+    });
+
+    Route::group(['prefix' => '/position'], function() {
+        Route::get('/index', 'PositionController@index')
+            ->name('position.index');
     });
 
     Route::group(['prefix' => '/structure'], function () {
-        Route::get('/index', 'CrudController@index')
+        Route::get('/index', 'StructureController@index')
             ->name('structure.index');
     });
 });

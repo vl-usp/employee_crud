@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\PositionResource;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -23,5 +24,24 @@ class Position extends Model
     public function employee()
     {
         return $this->hasMany(Employee::class);
+    }
+
+    private static function getColumns()
+    {
+        return [
+            "id",
+            "title",
+        ];
+    }
+
+    public static function getPositions()
+    {
+        $columns = self::getColumns();
+
+        $models = Position::select($columns)
+            ->orderBy('id')
+            ->get();
+
+        return PositionResource::collection($models);
     }
 }

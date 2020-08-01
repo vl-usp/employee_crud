@@ -2,13 +2,27 @@
     <div class="container">
         <Header></Header>
         <div class="container row justify-content-center">
-            <Department class="col"></Department>
+            <Department
+                :departments="getDepartments"
+                @department-handler="departmentHandler"
+            ></Department>
             <div class="add col justify-content-right">
-                <a role="button" class="btn btn-primary text-light btn-sm" @click="">Добавить</a>
+                <b-button v-b-modal.creation-modal
+                          class="btn-sm btn-info text-light"
+                >
+                    Добавить
+                </b-button>
             </div>
         </div>
-        <Table :employees="[1,2,3,4,5,6]"></Table>
-        <Paginator></Paginator>
+        <Table :employees="getEmployees"></Table>
+        <Paginator
+            :paginator="getPaginator"
+            @page-handler="pageHandler"
+        ></Paginator>
+
+        <CreationModal></CreationModal>
+        <EditionModal></EditionModal>
+        <DeletionModal></DeletionModal>
     </div>
 </template>
 
@@ -17,10 +31,48 @@
     import Table from "./table/Table"
     import Paginator from "./paginate/Paginator";
     import Department from "./filter/Department";
+    import CreationModal from "./empl_actions/create/CreationModal";
+    import DeletionModal from "./empl_actions/delete/DeletionModal";
+    import EditionModal from "./empl_actions/edit/EditionModal";
 
     export default {
         name: "EmplRoot",
-        components: {Department, Header,  Table, Paginator }
+        components: {EditionModal, DeletionModal, CreationModal, Department, Header,  Table, Paginator },
+        data() {
+            return {
+                isCreationModalOpen : false,
+                isEditionModalOpen : false,
+                isDeletionModalOpen : false,
+            }
+        },
+        mounted() {
+            this.$store.dispatch("fetchAllEmployees");
+            this.$store.dispatch("fetchDepartments");
+            this.$store.dispatch("fetchPositions");
+        },
+        computed: {
+            getEmployees() {
+                return this.$store.getters.getEmployees;
+            },
+            getPaginator() {
+                return this.$store.getters.getPaginator;
+            },
+            getDepartments() {
+                return this.$store.getters.getDepartments;
+            }
+        },
+        methods: {
+            departmentHandler(selected) {
+                if(selected === null) {
+                    this.$store.dispatch("fetchAllEmployees");
+                } else {
+                    this.$store.dispatch("fetchEmployeesByDepartment", selected);
+                }
+            },
+            pageHandler(pageUrl) {
+                this.$store.dispatch('fetchAllEmployees', pageUrl);
+            }
+        }
     }
 </script>
 
