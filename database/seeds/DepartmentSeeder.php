@@ -20,7 +20,8 @@ class DepartmentSeeder extends Seeder
     public function run()
     {
         $departments = ["Первый", "Второй", "Третий", "Четвертый"];
-        for($i = 0; $i < count($departments); $i++) {
+        for($i = 0; $i < count($departments); $i++)
+        {
             $this->createDepartment($departments[$i]);
         }
     }

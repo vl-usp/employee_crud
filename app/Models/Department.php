@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string title
+ */
 class Department extends Model
 {
     protected $primaryKey = 'id';

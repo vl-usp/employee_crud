@@ -7,7 +7,7 @@
                 <a role="button" class="btn btn-primary text-light btn-sm" @click="">Добавить</a>
             </div>
         </div>
-        <Table :employee="[1,2,3,4,5,6]"></Table>
+        <Table :employees="[1,2,3,4,5,6]"></Table>
         <Paginator></Paginator>
     </div>
 </template>
@@ -32,5 +32,8 @@
         font-weight: 200;
         height: 100vh;
         margin: 0;
+        a {
+            text-decoration: none;
+        }
     }
 </style>

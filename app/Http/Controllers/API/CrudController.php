@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 
 class CrudController extends Controller
@@ -10,11 +11,16 @@ class CrudController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param null $department_id
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index()
+    public function index($department_id = null)
     {
-        //
+        if($department_id === null) {
+            return Employee::getEmployeesWithPaginate();
+        } else {
+            return Employee::getEmployeesByDepartmentWithPaginate($department_id);
+        }
     }
 
     /**

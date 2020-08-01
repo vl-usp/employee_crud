@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string title
+ */
 class Position extends Model
 {
     protected $primaryKey = 'id';
@@ -17,8 +20,8 @@ class Position extends Model
         'title'
     ];
 
-    public function positions()
+    public function employee()
     {
-        return $this->belongsToMany(Employee::class, 'employee_position');
+        return $this->hasMany(Employee::class);
     }
 }

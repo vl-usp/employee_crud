@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Department;
 use App\Models\Employee;
 use Illuminate\Database\Seeder;
 
@@ -7,16 +8,19 @@ class EmployeeSeeder extends Seeder
 {
     private function setDirector()
     {
-        Employee::create([
-            "fio" => "Лебедев Антон Викторович",
-            "phone" => "+7-919-700-XX-XX"
-        ]);
+        factory(Employee::class)->state("director")->create();
         $this->command->info("Director was created");
+    }
+
+    private function getDepartmentCount()
+    {
+        return Department::all()->count();
     }
 
     private function setManager()
     {
-        factory(Employee::class, 4)->state('manager')->create();
+        $count = $this->getDepartmentCount();
+        factory(Employee::class, $count)->state("manager")->create();
         $this->command->info("Managers were created");
     }
 
