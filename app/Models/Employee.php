@@ -21,7 +21,8 @@ class Employee extends Model
         'fio',
         'phone',
         'department_id',
-        'boss_id'
+        'position_id',
+        'boss_id',
     ];
 
     public function department()

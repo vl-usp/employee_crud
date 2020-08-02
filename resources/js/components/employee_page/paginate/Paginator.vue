@@ -2,10 +2,11 @@
     <div class="row justify-content-center">
         <span class="m-2">Страницы:</span>
         <ul class="pagination">
-            <li class="page-item">
+            <li class="page-item"
+                :class="{ 'disabled': currentPage === 1 }"
+            >
                 <a class="page-link"
                    aria-label="Previous"
-                   v-show="currentPage !== 1"
                    @click.prevent="changePage(prevPage)"
                 >
                     <span aria-hidden="true">&laquo;</span>
@@ -20,10 +21,11 @@
                         {{ page }}
                     </a>
                 </li>
-            <li class="page-item">
+            <li class="page-item"
+                :class="{ 'disabled': currentPage === paginator.last_page }"
+            >
                 <a class="page-link"
                    aria-label="Next"
-                   v-show="currentPage !== paginator.last_page"
                    @click.prevent="changePage(nextPage)"
                 >
                     <span aria-hidden="true">&raquo;</span>
@@ -54,10 +56,9 @@
             }
         },
         methods: {
-            changePage(page) {
-                let pageUrl = this.paginator.path;
-                if(typeof page === 'number') {
-                    pageUrl += "?page=" + page;
+            changePage(pageUrl) {
+                if(typeof pageUrl === 'number') { //в случае нажатия на конкретную страницу
+                    pageUrl = this.paginator.path + "?page=" + pageUrl;
                 }
                 this.$emit('page-handler', pageUrl);
             }

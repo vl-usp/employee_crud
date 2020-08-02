@@ -42,6 +42,7 @@ export default {
             await axios.delete('/api/employee/destroy/' + id)
                 .then(function (response) {
                     alert('Сотрудник уволен');
+                    this.updateEmployees()
                 })
                 .catch(function (error) {
                     console.log(error);

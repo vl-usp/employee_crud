@@ -32,12 +32,13 @@
                 ></b-form-select>
             </b-form-group>
 
-            <b-form-group id="input-group-4" label="Отдел" label-for="input-4">
+            <b-form-group id="input-group-4" label="Отдел" label-for="input-4"
+                          v-if="form.position_id !== 1"
+            >
                 <b-form-select
                     id="input-4"
                     v-model="form.department_id"
                     :options="getDepartments"
-                    required
                 ></b-form-select>
             </b-form-group>
 
@@ -86,15 +87,13 @@
             onSubmit(evt) {
                 evt.preventDefault();
                 if(this.form.position_id === 1) {
-                    this.form.department_id = null;
-                    this.$store.dispatch("patchEmployee", this.employee.id, this.form); //todo вставить открытие модального окна редактирования
+                    this.form.department_id = null; //todo вставить открытие модального окна редактирования
                 } else if (this.form.position_id === 2) {
                     this.form.boss_id = this.getDirector()[0].id;
-                    this.$store.dispatch("patchEmployee", this.employee.id, this.form);
                 } else {
                     this.form.boss_id = this.getManager(this.form.department_id)[0].id;
-                    this.$store.dispatch("patchEmployee", this.employee.id, this.form);
                 }
+                this.$store.dispatch("patchEmployee", this.employee.id, this.form);
             },
             onReset(evt) {
                 evt.preventDefault()

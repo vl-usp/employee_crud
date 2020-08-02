@@ -39,6 +39,6 @@ class EmployeeSeeder extends Seeder
     {
         $this->setDirector();
         $this->setManager();
-        $this->setEmployee(40);
+        $this->setEmployee(20);
     }
 }

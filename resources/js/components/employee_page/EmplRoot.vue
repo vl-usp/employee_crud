@@ -12,7 +12,7 @@
                     Добавить
                 </b-button>
 
-                <b-modal id="creation-modal" title="Найм сотрудника" hide-footer centered>
+                <b-modal id="creation-modal" title="Добавление" hide-footer centered>
                     <CreationForm></CreationForm>
                 </b-modal>
             </div>
