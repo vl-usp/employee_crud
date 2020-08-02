@@ -21,7 +21,7 @@ Route::group(['namespace' => 'API'], function () {
         Route::get('/index/{department_id}', 'EmployeeController@index')
             ->name('employee.indexByDepartment');
 
-        Route::patch('/store', 'EmployeeController@store')
+        Route::put('/store', 'EmployeeController@store')
             ->name('employee.store');
 
         Route::patch('/update/{id}', 'EmployeeController@update')

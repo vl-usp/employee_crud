@@ -7,22 +7,23 @@
                 @department-handler="departmentHandler"
             ></Department>
             <div class="add col justify-content-right">
-                <b-button v-b-modal.creation-modal
-                          class="btn-sm btn-info text-light"
-                >
+                <b-button v-b-modal="'creation-modal'"
+                          class="btn-sm btn-info text-light">
                     Добавить
                 </b-button>
+
+                <b-modal id="creation-modal" title="Найм сотрудника" hide-footer centered>
+                    <CreationForm></CreationForm>
+                </b-modal>
             </div>
         </div>
-        <Table :employees="getEmployees"></Table>
+        <Table
+            :employees="getEmployees"
+        ></Table>
         <Paginator
             :paginator="getPaginator"
             @page-handler="pageHandler"
         ></Paginator>
-
-        <CreationModal></CreationModal>
-        <EditionModal></EditionModal>
-        <DeletionModal></DeletionModal>
     </div>
 </template>
 
@@ -31,13 +32,11 @@
     import Table from "./table/Table"
     import Paginator from "./paginate/Paginator";
     import Department from "./filter/Department";
-    import CreationModal from "./empl_actions/create/CreationModal";
-    import DeletionModal from "./empl_actions/delete/DeletionModal";
-    import EditionModal from "./empl_actions/edit/EditionModal";
+    import CreationForm from "./empl_actions/CreationForm";
 
     export default {
         name: "EmplRoot",
-        components: {EditionModal, DeletionModal, CreationModal, Department, Header,  Table, Paginator },
+        components: {CreationForm, Department, Header,  Table, Paginator },
         data() {
             return {
                 isCreationModalOpen : false,
@@ -71,7 +70,7 @@
             },
             pageHandler(pageUrl) {
                 this.$store.dispatch('fetchAllEmployees', pageUrl);
-            }
+            },
         }
     }
 </script>

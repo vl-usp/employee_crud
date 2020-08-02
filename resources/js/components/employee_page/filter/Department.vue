@@ -1,9 +1,13 @@
 <template>
     <div class="department">
-            <div>
+<!--        todo Стили-->
+            <div class="container">
+                <span class="m-2 col">Отделы</span>
                 <b-form-select
+                    class="col"
                     v-model="selected"
                     :options="getOptions"
+                    size="sm"
                     @change="departmentHandler"
                 >
                 </b-form-select>

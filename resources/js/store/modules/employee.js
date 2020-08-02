@@ -20,11 +20,32 @@ export default {
             return context.commit('updateEmployees', []);
         },
 
-        async pushEmployee(context) {
-            return context;
+        async putEmployee(context, params) {
+            await axios.put('/api/employee/store', params)
+            .then(function (response) {
+                alert('Сотрудник нанят');
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
         },
-        async deleteEmployee() {
-
+        async patchEmployee(context, id, params) {
+            await axios.patch('/api/employee/update/' + id, params)
+                .then(function (response) {
+                    alert('Данные сотрудника изменены')
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+        async deleteEmployee(context, id) {
+            await axios.delete('/api/employee/destroy/' + id)
+                .then(function (response) {
+                    alert('Сотрудник уволен');
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
         }
     },
     mutations: {
