@@ -69,16 +69,18 @@
                     this.$store.dispatch('fetchEmployeesByDepartment', this.selectedDepartment);
                 }
             },
-            departmentHandler(selected) {
+            departmentHandler(selected) { //обработчик события изменения отдела в селект боксе
                 this.selectedDepartment = selected;
                 this.fetchByDepartment();
             },
-            pageHandler(pageUrl) {
+            pageHandler(pageUrl) { //обработчик изменения страницы
                 this.currentPageUrl = pageUrl;
-                this.$store.dispatch('fetchAllEmployees', this.currentPageUrl);
+                this.$store.dispatch('fetchAllEmployees', this.currentPageUrl); //this.currentPageUrl уже использует '/{id}?page=x в url
             },
             employeeHandler() {
                 this.fetchByDepartment();
+                this.$store.dispatch('fetchDirector');
+                this.$store.dispatch('fetchManagers');
             }
         }
     }

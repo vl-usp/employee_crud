@@ -4884,15 +4884,19 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     departmentHandler: function departmentHandler(selected) {
+      //обработчик события изменения отдела в селект боксе
       this.selectedDepartment = selected;
       this.fetchByDepartment();
     },
     pageHandler: function pageHandler(pageUrl) {
+      //обработчик изменения страницы
       this.currentPageUrl = pageUrl;
-      this.$store.dispatch('fetchAllEmployees', this.currentPageUrl);
+      this.$store.dispatch('fetchAllEmployees', this.currentPageUrl); //this.currentPageUrl уже использует '/{id}?page=x в url
     },
     employeeHandler: function employeeHandler() {
       this.fetchByDepartment();
+      this.$store.dispatch('fetchDirector');
+      this.$store.dispatch('fetchManagers');
     }
   }
 });
@@ -4992,14 +4996,17 @@ __webpack_require__.r(__webpack_exports__);
       this.alertContent = message;
     },
     getDirector: function getDirector() {
+      //возвращает директора
       return this.$store.getters.getDirector;
     },
     getManager: function getManager(department_id) {
+      //возвращает руководителя проектами по отделу
       return this.$store.getters.getManagers.filter(function (obj) {
         return obj.department.id === department_id;
       });
     },
     setDirectorBoss: function setDirectorBoss() {
+      //проверяет занята ли должность директора, если нет, то устанавливает значения
       var director = this.getDirector();
 
       if (Object.keys(director).length !== 0) {
@@ -5008,13 +5015,15 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       this.form.department_id = null;
+      this.form.boss_id = null;
       return true;
     },
     setManagerBoss: function setManagerBoss() {
+      //то же что и выше, только для руководителя проектами
       var manager = this.getManager(this.form.department_id);
 
       if (Object.keys(manager).length !== 0) {
-        this.showAlert('Должность руководителя проектов в этом отделе занята');
+        this.showAlert('Должность руководителя проектами в этом отделе занята');
         return false;
       }
 
@@ -5022,6 +5031,7 @@ __webpack_require__.r(__webpack_exports__);
       return true;
     },
     setEmployeeBoss: function setEmployeeBoss() {
+      //проверяет есть ли в выбранном отделе руководитель, если есть, устанавливает его как босса
       var manager = this.getManager(this.form.department_id);
 
       if (Object.keys(manager).length === 0) {
@@ -5044,8 +5054,6 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       this.$store.dispatch('storeEmployee', this.form);
-      this.$store.dispatch('fetchDirector');
-      this.$store.dispatch('fetchManagers');
       this.$emit('employee-handler');
       this.showAlert('Сотрудник нанят!');
     },
@@ -5140,8 +5148,6 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       this.$store.dispatch("destroyEmployee", this.employee.id);
-      this.$store.dispatch('fetchDirector');
-      this.$store.dispatch('fetchManagers');
       this.$emit('employee-handler');
       this.isDeleted = true;
     }
@@ -5241,9 +5247,6 @@ __webpack_require__.r(__webpack_exports__);
     },
     getDepartments: function getDepartments() {
       return this.$store.getters.getDepartments;
-    },
-    isEmployees: function isEmployees() {
-      return this.employee.position.id > 2;
     }
   },
   methods: {
@@ -5260,6 +5263,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     setManagerBoss: function setManagerBoss() {
+      //проверяет занята ли должность руководителя, если нет, то устанавливает значения
       this.$store.dispatch('fetchManagers');
       var manager = this.getManager(this.form.department_id);
 
@@ -5272,6 +5276,7 @@ __webpack_require__.r(__webpack_exports__);
       return true;
     },
     setEmployeeBoss: function setEmployeeBoss() {
+      //проверяет есть ли в выбранном отделе руководитель, если есть, устанавливает его как босса
       var manager = this.getManager(this.form.department_id);
 
       if (Object.keys(manager).length === 0) {
@@ -5292,8 +5297,6 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       this.$store.dispatch('updateEmployee', [this.employee.id, this.form]);
-      this.$store.dispatch('fetchDirector');
-      this.$store.dispatch('fetchManagers');
       this.$emit('employee-handler');
       this.showAlert('Данные сотрудника изменены!');
     },
@@ -54495,12 +54498,6 @@ var render = function() {
             : _vm._e(),
           _vm._v(" "),
           _c(
-            "b-card",
-            { staticClass: "mt-3", attrs: { header: "Form Data Result" } },
-            [_c("pre", { staticClass: "m-0" }, [_vm._v(_vm._s(_vm.form))])]
-          ),
-          _vm._v(" "),
-          _c(
             "b-button",
             { attrs: { type: "submit", id: "submit", variant: "primary" } },
             [_vm._v("Сохранить")]
@@ -54713,7 +54710,7 @@ var render = function() {
             1
           ),
           _vm._v(" "),
-          _vm.isEmployees
+          this.employee.position.id > 2
             ? _c(
                 "b-form-group",
                 {
@@ -54743,7 +54740,7 @@ var render = function() {
               )
             : _vm._e(),
           _vm._v(" "),
-          _vm.isEmployees
+          this.employee.position.id > 2
             ? _c(
                 "b-form-group",
                 {
@@ -54772,12 +54769,6 @@ var render = function() {
                 1
               )
             : _vm._e(),
-          _vm._v(" "),
-          _c(
-            "b-card",
-            { staticClass: "mt-3", attrs: { header: "Form Data Result" } },
-            [_c("pre", { staticClass: "m-0" }, [_vm._v(_vm._s(_vm.form))])]
-          ),
           _vm._v(" "),
           _c("b-button", { attrs: { type: "submit", variant: "primary" } }, [
             _vm._v("Сохранить")

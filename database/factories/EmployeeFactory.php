@@ -9,6 +9,7 @@ use Faker\Generator as Faker;
 $factory->define(Employee::class,function (Faker $faker) {
     $fio = $faker->name;
     $boss_id = rand(2,5);
+    //получение отдела по боссу
     $department_id = Employee::select('department_id')->where('id', $boss_id)->get()->pluck('department_id')->first();
     $position_id = rand(3, Position::all()->count());
     return [

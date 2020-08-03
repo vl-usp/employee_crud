@@ -70,8 +70,6 @@
                     }
                 }
                 this.$store.dispatch("destroyEmployee", this.employee.id);
-                this.$store.dispatch('fetchDirector');
-                this.$store.dispatch('fetchManagers');
                 this.$emit('employee-handler');
                 this.isDeleted = true;
             },

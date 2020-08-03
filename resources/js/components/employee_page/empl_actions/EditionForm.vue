@@ -24,7 +24,7 @@
                 ></b-form-input>
             </b-form-group>
 
-            <b-form-group id="input-group-3" label="Должность" label-for="input-3" v-if="isEmployees" >
+            <b-form-group id="input-group-3" label="Должность" label-for="input-3" v-if="this.employee.position.id > 2" >
                 <b-form-select
                     id="input-3"
                     v-model="form.position_id"
@@ -33,7 +33,7 @@
                 ></b-form-select>
             </b-form-group>
 
-            <b-form-group id="input-group-4" label="Отдел" label-for="input-4" v-if="isEmployees" >
+            <b-form-group id="input-group-4" label="Отдел" label-for="input-4" v-if="this.employee.position.id > 2" >
                 <b-form-select
                     id="input-4"
                     v-model="form.department_id"
@@ -42,9 +42,9 @@
                 ></b-form-select>
             </b-form-group>
 
-            <b-card class="mt-3" header="Form Data Result">
-                <pre class="m-0">{{ form }}</pre>
-            </b-card>
+<!--            <b-card class="mt-3" header="Form Data Result">-->
+<!--                <pre class="m-0">{{ form }}</pre>-->
+<!--            </b-card>-->
 
             <b-button type="submit" variant="primary">Сохранить</b-button>
             <b-button type="reset" variant="danger">Восстановить данные</b-button>
@@ -80,9 +80,6 @@
             getDepartments() {
                 return this.$store.getters.getDepartments;
             },
-            isEmployees() {
-                return this.employee.position.id > 2;
-            }
         },
         methods: {
             showAlert(message) {
@@ -98,7 +95,7 @@
                     .filter(obj => (obj.department.id === department_id));
             },
 
-            setManagerBoss() {
+            setManagerBoss() { //проверяет занята ли должность руководителя, если нет, то устанавливает значения
                 this.$store.dispatch('fetchManagers');
                 const manager = this.getManager(this.form.department_id);
                 if(Object.keys(manager).length !== 0) {
@@ -108,7 +105,7 @@
                 this.form.boss_id = this.getDirector().id;
                 return true;
             },
-            setEmployeeBoss() {
+            setEmployeeBoss() { //проверяет есть ли в выбранном отделе руководитель, если есть, устанавливает его как босса
                 const manager = this.getManager(this.form.department_id);
                 if(Object.keys(manager).length === 0) {
                     this.showAlert('Для начала нужно нанять руководителя проектами');
@@ -126,8 +123,6 @@
                     if(!this.setEmployeeBoss()) return;
                 }
                 this.$store.dispatch('updateEmployee', [ this.employee.id, this.form ]);
-                this.$store.dispatch('fetchDirector');
-                this.$store.dispatch('fetchManagers');
                 this.$emit('employee-handler');
                 this.showAlert('Данные сотрудника изменены!');
             },

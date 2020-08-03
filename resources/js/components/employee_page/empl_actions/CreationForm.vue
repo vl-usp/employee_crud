@@ -44,9 +44,9 @@
                 ></b-form-select>
             </b-form-group>
 
-            <b-card class="mt-3" header="Form Data Result">
-                <pre class="m-0">{{ form }}</pre>
-            </b-card>
+<!--            <b-card class="mt-3" header="Form Data Result">-->
+<!--                <pre class="m-0">{{ form }}</pre>-->
+<!--            </b-card>-->
 
             <b-button type="submit" id="submit" variant="primary">Сохранить</b-button>
             <b-button type="reset" id="reset" variant="danger">Сбросить данные</b-button>
@@ -83,33 +83,34 @@
                 this.alertContent = message;
             },
 
-            getDirector() {
+            getDirector() { //возвращает директора
                 return this.$store.getters.getDirector
             },
-            getManager(department_id) {
+            getManager(department_id) { //возвращает руководителя проектами по отделу
                 return this.$store.getters.getManagers
                     .filter(obj => (obj.department.id === department_id));
             },
 
-            setDirectorBoss() {
+            setDirectorBoss() { //проверяет занята ли должность директора, если нет, то устанавливает значения
                 const director = this.getDirector();
                 if(Object.keys(director).length !== 0) {
                     this.showAlert('Должность директора занята');
                     return false;
                 }
                 this.form.department_id = null;
+                this.form.boss_id = null;
                 return true;
             },
-            setManagerBoss() {
+            setManagerBoss() { //то же что и выше, только для руководителя проектами
                 const manager = this.getManager(this.form.department_id);
                 if(Object.keys(manager).length !== 0) {
-                    this.showAlert('Должность руководителя проектов в этом отделе занята');
+                    this.showAlert('Должность руководителя проектами в этом отделе занята');
                     return false;
                 }
                 this.form.boss_id = this.getDirector().id;
                 return true;
             },
-            setEmployeeBoss() {
+            setEmployeeBoss() { //проверяет есть ли в выбранном отделе руководитель, если есть, устанавливает его как босса
                 const manager = this.getManager(this.form.department_id);
                 if(Object.keys(manager).length === 0)
                 {
@@ -130,8 +131,6 @@
                     if(!this.setEmployeeBoss()) return;
                 }
                 this.$store.dispatch('storeEmployee', this.form);
-                this.$store.dispatch('fetchDirector');
-                this.$store.dispatch('fetchManagers');
                 this.$emit('employee-handler');
                 this.showAlert('Сотрудник нанят!');
             },
