@@ -24,6 +24,22 @@ class EmployeeController extends Controller
     }
 
     /**
+     * @return \App\Http\Resources\EmployeeResource
+     */
+    public function directorIndex()
+    {
+        return Employee::getDirector();
+    }
+
+    /**
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function managerIndex()
+    {
+        return Employee::getManagers();
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request

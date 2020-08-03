@@ -21,6 +21,12 @@ Route::group(['namespace' => 'API'], function () {
         Route::get('/index/{department_id}', 'EmployeeController@index')
             ->name('employee.indexByDepartment');
 
+        Route::get('/managers/index', 'EmployeeController@managerIndex')
+            ->name('employee.manager.index');
+
+        Route::get('/director/index', 'EmployeeController@directorIndex')
+            ->name('employee.director.index');
+
         Route::put('/store', 'EmployeeController@store')
             ->name('employee.store');
 

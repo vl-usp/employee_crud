@@ -2,6 +2,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
+                <b-alert v-model="alertShowed" dismissible variant="warning">{{ alertContent }}</b-alert>
                 <table class="table">
                     <thead>
                         <tr>
@@ -15,7 +16,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="employee in employees">
+                        <tr v-for="employee in employees"
+                            :key="employee.id"
+                        >
                             <th class="scope">{{ employee.fio }}</th>
                             <td>{{ employee.department.title }}</td>
                             <td>{{ employee.position.title }}</td>
@@ -29,8 +32,8 @@
                                         <path d="M13.293 1.207a1 1 0 0 1 1.414 0l.03.03a1 1 0 0 1 .03 1.383L13.5 4 12 2.5l1.293-1.293z"/>
                                     </svg>
                                 </b-button>
-                                <b-modal :id="'edition-modal' + employee.id" title="Редактирование сотрудника" hide-footer centered >
-                                    <EditionForm :employee="employee"></EditionForm>
+                                <b-modal :id="'edition-modal' + employee.id" title="Редактирование данных сотрудника" hide-footer centered >
+                                    <EditionForm :employee="employee" @employee-handler="employeeHandler"></EditionForm>
                                 </b-modal>
                             </td>
                             <td>
@@ -41,15 +44,13 @@
                                     </svg>
                                 </b-button>
                                 <b-modal :id="'deletion-modal' + employee.id" title="Увольнение сотрудника" hide-footer centered>
-                                    <DeletionForm :employee="employee"></DeletionForm>
+                                    <DeletionForm :employee="employee" @employee-handler="employeeHandler"></DeletionForm>
                                 </b-modal>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-
             </div>
-
         </div>
     </div>
 </template>
@@ -60,11 +61,26 @@
     export default {
         name: "Table",
         components: { EditionForm, DeletionForm },
+        data() {
+            return {
+                alertShowed: false,
+                alertContent: '',
+                isEmployeesExist: false,
+            }
+        },
         props: {
             employees: {
                 type: Array,
                 required: true,
             }
         },
+        computed: {
+
+        },
+        methods: {
+            employeeHandler() {
+                this.$emit('employee-handler');
+            },
+        }
     }
 </script>

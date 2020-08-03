@@ -24,7 +24,7 @@ class CreateEmployeesTable extends Migration
 
             $table->foreign("department_id")->references("id")->on("departments");
             $table->foreign("position_id")->references("id")->on("positions");
-            $table->foreign("boss_id")->references("id")->on("employees");
+            $table->foreign("boss_id")->references("id")->on("employees")->onDelete('cascade');
         });
     }
 

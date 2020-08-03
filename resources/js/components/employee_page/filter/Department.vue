@@ -1,17 +1,14 @@
 <template>
     <div class="department">
-<!--        todo Стили-->
-            <div class="container">
-                <span class="m-2 col">Отделы</span>
-                <b-form-select
-                    class="col"
-                    v-model="selected"
-                    :options="getOptions"
-                    size="sm"
-                    @change="departmentHandler"
-                >
-                </b-form-select>
-            </div>
+        <div class="container">
+            <b-form-select
+                v-model="selected"
+                :options="getOptions"
+                size="sm"
+                @change="departmentHandler"
+            >
+            </b-form-select>
+        </div>
     </div>
 </template>
 

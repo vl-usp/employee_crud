@@ -6,9 +6,6 @@ export default {
                     context.commit('updateDepartments', response.data.data);
                 })
         },
-        async clearDepartments(context) {
-            return context.commit('updateDepartments', []);
-        },
     },
     mutations: {
         updateDepartments(state, departments) {

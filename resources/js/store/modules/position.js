@@ -5,9 +5,9 @@ export default {
                 .then(response => {
                     context.commit('updatePositions', response.data.data);
                 })
-        },
-        async clearPositions(context) {
-            return context.commit('updatePositions', []);
+                .catch(function (error) {
+                    console.log(error);
+                });
         },
     },
     mutations: {

@@ -1,23 +1,25 @@
 <template>
     <div class="container">
         <Header></Header>
-        <div class="container row justify-content-center">
-            <Department
-                :departments="getDepartments"
-                @department-handler="departmentHandler"
-            ></Department>
-            <div class="add col justify-content-right">
-                <b-button v-b-modal="'creation-modal'"
-                          class="btn-sm btn-info text-light">
+        <div class="row justify-content-between mb-3">
+            <div class="col-3">
+                <Department
+                    :departments="getDepartments"
+                    @department-handler="departmentHandler"
+                ></Department>
+            </div>
+            <div class="col-2">
+                <b-button v-b-modal="'creation-modal'" class="btn-sm btn-info text-light">
                     Добавить
                 </b-button>
 
                 <b-modal id="creation-modal" title="Добавление" hide-footer centered>
-                    <CreationForm></CreationForm>
+                    <CreationForm @employee-handler="employeeHandler"></CreationForm>
                 </b-modal>
             </div>
         </div>
         <Table
+            @employee-handler="employeeHandler"
             :employees="getEmployees"
         ></Table>
         <Paginator
@@ -39,15 +41,14 @@
         components: {CreationForm, Department, Header,  Table, Paginator },
         data() {
             return {
-                isCreationModalOpen : false,
-                isEditionModalOpen : false,
-                isDeletionModalOpen : false,
+                selectedDepartment: null,
+                currentPageUrl: '',
             }
         },
         mounted() {
-            this.$store.dispatch("fetchAllEmployees");
-            this.$store.dispatch("fetchDepartments");
-            this.$store.dispatch("fetchPositions");
+            this.$store.dispatch('fetchAllEmployees');
+            this.$store.dispatch('fetchDepartments');
+            this.$store.dispatch('fetchPositions');
         },
         computed: {
             getEmployees() {
@@ -58,19 +59,27 @@
             },
             getDepartments() {
                 return this.$store.getters.getDepartments;
-            }
+            },
         },
         methods: {
-            departmentHandler(selected) {
-                if(selected === null) {
-                    this.$store.dispatch("fetchAllEmployees");
+            fetchByDepartment() {
+                if(this.selectedDepartment === null) {
+                    this.$store.dispatch('fetchAllEmployees', this.currentPageUrl);
                 } else {
-                    this.$store.dispatch("fetchEmployeesByDepartment", selected);
+                    this.$store.dispatch('fetchEmployeesByDepartment', this.selectedDepartment, this.currentPageUrl );
                 }
             },
-            pageHandler(pageUrl) {
-                this.$store.dispatch('fetchAllEmployees', pageUrl);
+            departmentHandler(selected) {
+                this.selectedDepartment = selected;
+                this.fetchByDepartment();
             },
+            pageHandler(pageUrl) {
+                this.currentPageUrl = pageUrl;
+                this.fetchByDepartment();
+            },
+            employeeHandler() {
+                this.fetchByDepartment();
+            }
         }
     }
 </script>

@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Employee;
 
 class StructureController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\StructureResource
      */
     public function index()
     {
-        //
+        return Employee::getStructure();
     }
 }

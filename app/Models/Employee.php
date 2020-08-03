@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Resources\EmployeeResource;
+use App\Http\Resources\StructureResource;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -40,6 +41,16 @@ class Employee extends Model
         return $this->belongsTo(Employee::class, 'boss_id', 'id');
     }
 
+    public function subject()
+    {
+        return $this->hasMany(Employee::class, 'boss_id', 'id');
+    }
+
+    public function subjects()
+    {
+        return $this->subject()->with('subjects');
+    }
+
     private static function getColumns()
     {
         return [
@@ -62,7 +73,7 @@ class Employee extends Model
                 'position',
                 'boss',
             ])
-            ->orderBy('id');
+            ->orderBy('position_id');
 
         return $models;
     }
@@ -82,5 +93,44 @@ class Employee extends Model
             ->paginate($perPage);
 
         return EmployeeResource::collection($models);
+    }
+
+    public static function getDirector()
+    {
+        $columns = self::getColumns();
+
+        $model = Employee::select($columns)
+            ->with([
+                'department',
+                'position'
+            ])
+            ->where('position_id', 1)
+            ->first();
+
+        return new EmployeeResource($model);
+    }
+
+    public static function getManagers()
+    {
+        $columns = self::getColumns();
+
+        $models = Employee::select($columns)
+            ->with([
+                'department',
+                'position'
+            ])
+            ->where('position_id', 2)
+            ->get();
+
+        return EmployeeResource::collection($models);
+    }
+
+    public static function getStructure()
+    {
+        $model = Employee::with('subjects')
+            ->where('position_id', 1)
+            ->first();
+
+        return new StructureResource($model);
     }
 }

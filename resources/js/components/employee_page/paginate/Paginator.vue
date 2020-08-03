@@ -14,7 +14,8 @@
             </li>
                 <li class="page-item"
                     :class="{ 'active': currentPage === page }"
-                    v-for="page of paginator.last_page"
+                    v-for="(page,i) of paginator.last_page"
+                    :key="i"
                 >
                     <a class="page-link"
                        @click.prevent="changePage(page)">
