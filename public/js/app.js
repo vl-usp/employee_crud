@@ -4878,9 +4878,9 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     fetchByDepartment: function fetchByDepartment() {
       if (this.selectedDepartment === null) {
-        this.$store.dispatch('fetchAllEmployees', this.currentPageUrl);
+        this.$store.dispatch('fetchAllEmployees');
       } else {
-        this.$store.dispatch('fetchEmployeesByDepartment', this.selectedDepartment, this.currentPageUrl);
+        this.$store.dispatch('fetchEmployeesByDepartment', this.selectedDepartment);
       }
     },
     departmentHandler: function departmentHandler(selected) {
@@ -4889,7 +4889,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     pageHandler: function pageHandler(pageUrl) {
       this.currentPageUrl = pageUrl;
-      this.fetchByDepartment();
+      this.$store.dispatch('fetchAllEmployees', this.currentPageUrl);
     },
     employeeHandler: function employeeHandler() {
       this.fetchByDepartment();

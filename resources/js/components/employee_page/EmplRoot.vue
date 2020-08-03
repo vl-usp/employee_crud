@@ -64,9 +64,9 @@
         methods: {
             fetchByDepartment() {
                 if(this.selectedDepartment === null) {
-                    this.$store.dispatch('fetchAllEmployees', this.currentPageUrl);
+                    this.$store.dispatch('fetchAllEmployees');
                 } else {
-                    this.$store.dispatch('fetchEmployeesByDepartment', this.selectedDepartment, this.currentPageUrl );
+                    this.$store.dispatch('fetchEmployeesByDepartment', this.selectedDepartment);
                 }
             },
             departmentHandler(selected) {
@@ -75,7 +75,7 @@
             },
             pageHandler(pageUrl) {
                 this.currentPageUrl = pageUrl;
-                this.fetchByDepartment();
+                this.$store.dispatch('fetchAllEmployees', this.currentPageUrl);
             },
             employeeHandler() {
                 this.fetchByDepartment();
