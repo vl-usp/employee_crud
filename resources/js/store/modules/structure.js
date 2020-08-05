@@ -3,7 +3,7 @@ export default {
         async fetchStructure(context) {
             return axios.get('/api/structure/index')
                 .then(response => {
-                    context.commit('updateStructure', response.data.data);
+                    context.commit('SET_STRUCTURE', response.data.data);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -11,7 +11,7 @@ export default {
         },
     },
     mutations: {
-        updateStructure(state, structure) {
+        SET_STRUCTURE(state, structure) {
             state.structure = structure;
         },
     },

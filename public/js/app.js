@@ -4836,9 +4836,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 
 
 
@@ -4861,32 +4858,29 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     this.$store.dispatch('fetchAllEmployees');
-    this.$store.dispatch('fetchDepartments');
     this.$store.dispatch('fetchPositions');
   },
-  computed: {
-    getEmployees: function getEmployees() {
-      return this.$store.getters.getEmployees;
-    },
-    getPaginator: function getPaginator() {
-      return this.$store.getters.getPaginator;
-    },
-    getDepartments: function getDepartments() {
-      return this.$store.getters.getDepartments;
-    }
-  },
+  computed: {},
   methods: {
-    fetchByDepartment: function fetchByDepartment() {
-      if (this.selectedDepartment === null) {
-        this.$store.dispatch('fetchAllEmployees');
-      } else {
-        this.$store.dispatch('fetchEmployeesByDepartment', this.selectedDepartment);
-      }
+    fetchEmployees: function fetchEmployees() {
+      var _this = this;
+
+      setTimeout(function () {
+        if (_this.selectedDepartment === null) {
+          _this.$store.dispatch('fetchAllEmployees');
+        } else {
+          _this.$store.dispatch('fetchEmployeesByDepartment', _this.selectedDepartment);
+
+          _this.$store.dispatch('fetchDirector');
+
+          _this.$store.dispatch('fetchManagers');
+        }
+      }, 350);
     },
     departmentHandler: function departmentHandler(selected) {
       //обработчик события изменения отдела в селект боксе
       this.selectedDepartment = selected;
-      this.fetchByDepartment();
+      this.fetchEmployees();
     },
     pageHandler: function pageHandler(pageUrl) {
       //обработчик изменения страницы
@@ -4894,9 +4888,7 @@ __webpack_require__.r(__webpack_exports__);
       this.$store.dispatch('fetchAllEmployees', this.currentPageUrl); //this.currentPageUrl уже использует '/{id}?page=x в url
     },
     employeeHandler: function employeeHandler() {
-      this.fetchByDepartment();
-      this.$store.dispatch('fetchDirector');
-      this.$store.dispatch('fetchManagers');
+      this.fetchEmployees();
     }
   }
 });
@@ -4991,7 +4983,7 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    showAlert: function showAlert(message) {
+    showAlert_: function showAlert_(message) {
       this.alertShowed = true;
       this.alertContent = message;
     },
@@ -4999,11 +4991,9 @@ __webpack_require__.r(__webpack_exports__);
       //возвращает директора
       return this.$store.getters.getDirector;
     },
-    getManager: function getManager(department_id) {
+    getManager: function getManager(departmentId) {
       //возвращает руководителя проектами по отделу
-      return this.$store.getters.getManagers.filter(function (obj) {
-        return obj.department.id === department_id;
-      });
+      return this.$store.getters.getManagerByDepartment(departmentId);
     },
     setDirectorBoss: function setDirectorBoss() {
       //проверяет занята ли должность директора, если нет, то устанавливает значения
@@ -5103,16 +5093,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "DeletionForm",
   data: function data() {
     return {
-      isDeleted: false,
       alertShowed: false,
       alertContent: '',
       clickCount: 0
@@ -5149,7 +5133,8 @@ __webpack_require__.r(__webpack_exports__);
 
       this.$store.dispatch("destroyEmployee", this.employee.id);
       this.$emit('employee-handler');
-      this.isDeleted = true;
+      this.$emit('show-alert', 'Сотрудник ' + this.employee.fio + ' уволен');
+      this.$bvModal.hide('deletion-modal' + this.employee.id);
     }
   }
 });
@@ -5241,9 +5226,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     getPositions: function getPositions() {
-      return this.$store.getters.getPositions.filter(function (obj) {
-        return obj.value > 1;
-      });
+      return this.$store.getters.getPositionsForEmployee;
     },
     getDepartments: function getDepartments() {
       return this.$store.getters.getDepartments;
@@ -5257,14 +5240,11 @@ __webpack_require__.r(__webpack_exports__);
     getDirector: function getDirector() {
       return this.$store.getters.getDirector;
     },
-    getManager: function getManager(department_id) {
-      return this.$store.getters.getManagers.filter(function (obj) {
-        return obj.department.id === department_id;
-      });
+    getManager: function getManager(departmentId) {
+      return this.$store.getters.getManagerByDepartment(departmentId);
     },
     setManagerBoss: function setManagerBoss() {
       //проверяет занята ли должность руководителя, если нет, то устанавливает значения
-      this.$store.dispatch('fetchManagers');
       var manager = this.getManager(this.form.department_id);
 
       if (Object.keys(manager).length !== 0) {
@@ -5342,11 +5322,8 @@ __webpack_require__.r(__webpack_exports__);
       selected: null
     };
   },
-  props: {
-    departments: {
-      type: Array,
-      required: true
-    }
+  mounted: function mounted() {
+    this.$store.dispatch('fetchDepartments');
   },
   computed: {
     getOptions: function getOptions() {
@@ -5354,7 +5331,7 @@ __webpack_require__.r(__webpack_exports__);
         value: null,
         text: "Все"
       }];
-      return all.concat(this.departments);
+      return all.concat(this.$store.getters.getDepartments);
     }
   },
   methods: {
@@ -5415,28 +5392,25 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Paginator",
-  props: {
-    paginator: {
-      type: Object,
-      required: true
-    }
-  },
   computed: {
+    getPaginator: function getPaginator() {
+      return this.$store.getters.getPaginator;
+    },
     nextPage: function nextPage() {
-      return this.paginator.next;
+      return this.getPaginator.next;
     },
     prevPage: function prevPage() {
-      return this.paginator.prev;
+      return this.getPaginator.prev;
     },
     currentPage: function currentPage() {
-      return this.paginator.current_page;
+      return this.getPaginator.current_page;
     }
   },
   methods: {
     changePage: function changePage(pageUrl) {
       if (typeof pageUrl === 'number') {
         //в случае нажатия на конкретную страницу
-        pageUrl = this.paginator.path + "?page=" + pageUrl;
+        pageUrl = this.getPaginator.path + "?page=" + pageUrl;
       }
 
       this.$emit('page-handler', pageUrl);
@@ -5529,14 +5503,16 @@ __webpack_require__.r(__webpack_exports__);
       isEmployeesExist: false
     };
   },
-  props: {
-    employees: {
-      type: Array,
-      required: true
+  computed: {
+    getEmployees: function getEmployees() {
+      return this.$store.getters.getEmployees;
     }
   },
-  computed: {},
   methods: {
+    showAlert: function showAlert(message) {
+      this.alertShowed = true;
+      this.alertContent = message;
+    },
     employeeHandler: function employeeHandler() {
       this.$emit('employee-handler');
     }
@@ -54277,7 +54253,6 @@ var render = function() {
           { staticClass: "col-3" },
           [
             _c("Department", {
-              attrs: { departments: _vm.getDepartments },
               on: { "department-handler": _vm.departmentHandler }
             })
           ],
@@ -54326,15 +54301,9 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
-      _c("Table", {
-        attrs: { employees: _vm.getEmployees },
-        on: { "employee-handler": _vm.employeeHandler }
-      }),
+      _c("Table", { on: { "employee-handler": _vm.employeeHandler } }),
       _vm._v(" "),
-      _c("Paginator", {
-        attrs: { paginator: _vm.getPaginator },
-        on: { "page-handler": _vm.pageHandler }
-      })
+      _c("Paginator", { on: { "page-handler": _vm.pageHandler } })
     ],
     1
   )
@@ -54556,56 +54525,52 @@ var render = function() {
         [_vm._v(_vm._s(_vm.alertContent))]
       ),
       _vm._v(" "),
-      _vm.isDeleted === false
-        ? _c(
-            "div",
-            [
-              _c("p", [
-                _vm._v(
-                  "\n            Вы действительно хотите уволить:\n            "
-                ),
-                _c("br"),
-                _vm._v(" "),
-                _c("span", { staticClass: "p-2" }, [
-                  _vm._v(
-                    "\n                Должность - " +
-                      _vm._s(_vm.employee.position.title) +
-                      "\n            "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("br"),
-                _vm._v(" "),
-                _c("span", { staticClass: "p-2" }, [
-                  _vm._v(
-                    "\n                Отдел - " +
-                      _vm._s(_vm.employee.department.title) +
-                      "\n            "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("br"),
-                _vm._v(" "),
-                _c("span", { staticClass: "p-2" }, [
-                  _vm._v(
-                    "\n                №" +
-                      _vm._s(_vm.employee.id) +
-                      "-" +
-                      _vm._s(_vm.employee.fio) +
-                      "\n            "
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c("b-button", { attrs: { type: "submit", variant: "danger" } }, [
-                _vm._v("Удалить")
-              ])
-            ],
-            1
-          )
-        : _c("div", [
-            _c("p", [_vm._v("\n            Сотрудник уволен.\n        ")])
+      _c(
+        "div",
+        [
+          _c("p", [
+            _vm._v(
+              "\n            Вы действительно хотите уволить:\n            "
+            ),
+            _c("br"),
+            _vm._v(" "),
+            _c("span", { staticClass: "p-2" }, [
+              _vm._v(
+                "\n                Должность - " +
+                  _vm._s(_vm.employee.position.title) +
+                  "\n            "
+              )
+            ]),
+            _vm._v(" "),
+            _c("br"),
+            _vm._v(" "),
+            _c("span", { staticClass: "p-2" }, [
+              _vm._v(
+                "\n                Отдел - " +
+                  _vm._s(_vm.employee.department.title) +
+                  "\n            "
+              )
+            ]),
+            _vm._v(" "),
+            _c("br"),
+            _vm._v(" "),
+            _c("span", { staticClass: "p-2" }, [
+              _vm._v(
+                "\n                №" +
+                  _vm._s(_vm.employee.id) +
+                  "-" +
+                  _vm._s(_vm.employee.fio) +
+                  "\n            "
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("b-button", { attrs: { type: "submit", variant: "danger" } }, [
+            _vm._v("Удалить")
           ])
+        ],
+        1
+      )
     ],
     1
   )
@@ -54880,7 +54845,7 @@ var render = function() {
           ]
         ),
         _vm._v(" "),
-        _vm._l(_vm.paginator.last_page, function(page, i) {
+        _vm._l(_vm.getPaginator.last_page, function(page, i) {
           return _c(
             "li",
             {
@@ -54916,7 +54881,7 @@ var render = function() {
           "li",
           {
             staticClass: "page-item",
-            class: { disabled: _vm.currentPage === _vm.paginator.last_page }
+            class: { disabled: _vm.currentPage === _vm.getPaginator.last_page }
           },
           [
             _c(
@@ -54988,7 +54953,7 @@ var render = function() {
             _vm._v(" "),
             _c(
               "tbody",
-              _vm._l(_vm.employees, function(employee) {
+              _vm._l(_vm.getEmployees, function(employee) {
                 return _c("tr", { key: employee.id }, [
                   _c("th", { staticClass: "scope" }, [
                     _vm._v(_vm._s(employee.fio))
@@ -55143,7 +55108,10 @@ var render = function() {
                         [
                           _c("DeletionForm", {
                             attrs: { employee: employee },
-                            on: { "employee-handler": _vm.employeeHandler }
+                            on: {
+                              "employee-handler": _vm.employeeHandler,
+                              "show-alert": _vm.showAlert
+                            }
                           })
                         ],
                         1
@@ -72811,7 +72779,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context.prev = _context.next) {
               case 0:
                 return _context.abrupt("return", axios.get('/api/department/index').then(function (response) {
-                  context.commit('updateDepartments', response.data.data);
+                  context.commit('SET_DEPARTMENTS', response.data.data);
                 }));
 
               case 1:
@@ -72824,7 +72792,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   mutations: {
-    updateDepartments: function updateDepartments(state, departments) {
+    SET_DEPARTMENTS: function SET_DEPARTMENTS(state, departments) {
       state.departments = departments;
     }
   },
@@ -72849,6 +72817,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -72861,91 +72833,214 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   actions: {
     fetchAllEmployees: function fetchAllEmployees(context) {
-      var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '/api/employee/index';
-      return axios.get(url).then(function (response) {
-        var paginator = Object.assign(response.data.meta, response.data.links);
-        var director = response.data.data.filter(function (obj) {
-          return obj.position.id === 1;
-        });
-        var managers = response.data.data.filter(function (obj) {
-          return obj.position.id === 2;
-        });
-        context.commit('updateEmployees', response.data.data);
-        context.commit('updatePaginator', paginator);
-        context.commit('updateDirector', director);
-        context.commit('updateManagers', managers);
-      })["catch"](function (error) {
-        console.log(error);
-      });
+      var _arguments = arguments;
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var url;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                url = _arguments.length > 1 && _arguments[1] !== undefined ? _arguments[1] : '/api/employee/index';
+                return _context.abrupt("return", axios.get(url).then(function (response) {
+                  var director = response.data.data.filter(function (obj) {
+                    return obj.position.id === 1;
+                  });
+                  var managers = response.data.data.filter(function (obj) {
+                    return obj.position.id === 2;
+                  });
+                  var employees = response.data.data;
+                  var paginator = Object.assign(response.data.meta, response.data.links);
+                  context.commit('SET_EMPLOYEES', employees);
+                  context.commit('SET_PAGINATOR', paginator);
+                  context.commit('SET_DIRECTOR', director);
+                  context.commit('SET_MANAGERS', managers);
+                })["catch"](function (error) {
+                  console.log(error);
+                }));
+
+              case 2:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
     },
     fetchEmployeesByDepartment: function fetchEmployeesByDepartment(context, department_id) {
-      var url = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '/api/employee/index/';
-      return axios.get(url + department_id).then(function (response) {
-        var paginator = Object.assign(response.data.meta, response.data.links);
-        context.commit('updateEmployees', response.data.data);
-        context.commit('updatePaginator', paginator);
-      })["catch"](function (error) {
-        console.log(error);
-      });
+      var _arguments2 = arguments;
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var url;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                url = _arguments2.length > 2 && _arguments2[2] !== undefined ? _arguments2[2] : '/api/employee/index/';
+                return _context2.abrupt("return", axios.get(url + department_id).then(function (response) {
+                  var employees = response.data.data;
+                  var paginator = Object.assign(response.data.meta, response.data.links);
+                  context.commit('SET_EMPLOYEES', employees);
+                  context.commit('SET_PAGINATOR', paginator);
+                })["catch"](function (error) {
+                  console.log(error);
+                }));
+
+              case 2:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
     },
     fetchDirector: function fetchDirector(context) {
-      var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '/api/employee/director/index';
-      return axios.get(url).then(function (response) {
-        context.commit('updateDirector', response.data.data);
-      })["catch"](function (error) {
-        console.log(error);
-      });
+      var _arguments3 = arguments;
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var url;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                url = _arguments3.length > 1 && _arguments3[1] !== undefined ? _arguments3[1] : '/api/employee/director/index';
+                return _context3.abrupt("return", axios.get(url).then(function (response) {
+                  context.commit('SET_DIRECTOR', response.data.data);
+                })["catch"](function (error) {
+                  console.log(error);
+                }));
+
+              case 2:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
     },
     fetchManagers: function fetchManagers(context) {
-      var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '/api/employee/managers/index';
-      return axios.get(url).then(function (response) {
-        context.commit('updateManagers', response.data.data);
-      })["catch"](function (error) {
-        console.log(error);
-      });
+      var _arguments4 = arguments;
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+        var url;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                url = _arguments4.length > 1 && _arguments4[1] !== undefined ? _arguments4[1] : '/api/employee/managers/index';
+                return _context4.abrupt("return", axios.get(url).then(function (response) {
+                  context.commit('SET_MANAGERS', response.data.data);
+                })["catch"](function (error) {
+                  console.log(error);
+                }));
+
+              case 2:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }))();
     },
     storeEmployee: function storeEmployee(context, params) {
-      axios.put('/api/employee/store', params).then(function (response) {})["catch"](function (error) {
-        console.log(error);
-      });
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                axios.put('/api/employee/store', params).then()["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 1:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5);
+      }))();
     },
     updateEmployee: function updateEmployee(context, _ref) {
-      var _ref2 = _slicedToArray(_ref, 2),
-          id = _ref2[0],
-          params = _ref2[1];
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee6() {
+        var _ref2, id, params;
 
-      axios.patch('/api/employee/update/' + id, params).then(function (response) {})["catch"](function (error) {
-        console.log(error);
-      });
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
+                _ref2 = _slicedToArray(_ref, 2), id = _ref2[0], params = _ref2[1];
+                axios.patch('/api/employee/update/' + id, params)["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 2:
+              case "end":
+                return _context6.stop();
+            }
+          }
+        }, _callee6);
+      }))();
     },
     destroyEmployee: function destroyEmployee(context, id) {
-      axios["delete"]('/api/employee/destroy/' + id).then(function (response) {})["catch"](function (error) {
-        console.log(error);
-      });
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee7() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                axios["delete"]('/api/employee/destroy/' + id).then()["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 1:
+              case "end":
+                return _context7.stop();
+            }
+          }
+        }, _callee7);
+      }))();
     }
   },
   mutations: {
-    updateEmployees: function updateEmployees(state, employees) {
+    SET_EMPLOYEES: function SET_EMPLOYEES(state, employees) {
       state.employees = employees;
     },
-    updateDirector: function updateDirector(state, director) {
+    SET_DIRECTOR: function SET_DIRECTOR(state, director) {
       state.director = director;
     },
-    updateManagers: function updateManagers(state, managers) {
+    SET_MANAGERS: function SET_MANAGERS(state, managers) {
       state.managers = managers;
     },
-    updatePaginator: function updatePaginator(state, paginator) {
+    SET_PAGINATOR: function SET_PAGINATOR(state, paginator) {
       state.paginator = paginator;
     }
   },
   state: {
     employees: [],
-    director: {},
+    director: {
+      id: 1,
+      boss_id: null,
+      department_id: null,
+      position_id: null,
+      fio: '',
+      phone: ''
+    },
     managers: [],
-    paginator: {}
+    paginator: {
+      current_page: 1,
+      first: '',
+      from: 1,
+      last: '',
+      last_page: 1,
+      next: '',
+      path: '',
+      per_page: 0,
+      prev: null,
+      to: 0,
+      total: 0
+    }
   },
   getters: {
     getEmployees: function getEmployees(state) {
@@ -72956,6 +73051,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     },
     getManagers: function getManagers(state) {
       return state.managers;
+    },
+    getManagerByDepartment: function getManagerByDepartment(state) {
+      return function (departmentId) {
+        return state.managers.filter(function (obj) {
+          return obj.department.id === departmentId;
+        });
+      };
     },
     getPaginator: function getPaginator(state) {
       return state.paginator;
@@ -72991,7 +73093,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context.prev = _context.next) {
               case 0:
                 return _context.abrupt("return", axios.get('/api/position/index').then(function (response) {
-                  context.commit('updatePositions', response.data.data);
+                  context.commit('SET_POSITIONS', response.data.data);
                 })["catch"](function (error) {
                   console.log(error);
                 }));
@@ -73006,7 +73108,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   mutations: {
-    updatePositions: function updatePositions(state, positions) {
+    SET_POSITIONS: function SET_POSITIONS(state, positions) {
       state.positions = positions;
     }
   },
@@ -73016,6 +73118,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   getters: {
     getPositions: function getPositions(state) {
       return state.positions;
+    },
+    getPositionsForEmployee: function getPositionsForEmployee(state) {
+      return state.positions.filter(function (obj) {
+        return obj.value > 1;
+      });
     }
   }
 });
@@ -73048,7 +73155,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context.prev = _context.next) {
               case 0:
                 return _context.abrupt("return", axios.get('/api/structure/index').then(function (response) {
-                  context.commit('updateStructure', response.data.data);
+                  context.commit('SET_STRUCTURE', response.data.data);
                 })["catch"](function (error) {
                   console.log(error);
                 }));
@@ -73063,7 +73170,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   mutations: {
-    updateStructure: function updateStructure(state, structure) {
+    SET_STRUCTURE: function SET_STRUCTURE(state, structure) {
       state.structure = structure;
     }
   },

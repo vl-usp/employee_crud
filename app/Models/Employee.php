@@ -117,7 +117,8 @@ class Employee extends Model
         $models = Employee::select($columns)
             ->with([
                 'department',
-                'position'
+                'position',
+                'boss',
             ])
             ->where('position_id', 2)
             ->get();

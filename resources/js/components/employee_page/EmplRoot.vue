@@ -4,7 +4,6 @@
         <div class="row justify-content-between mb-3">
             <div class="col-3">
                 <Department
-                    :departments="getDepartments"
                     @department-handler="departmentHandler"
                 ></Department>
             </div>
@@ -20,10 +19,8 @@
         </div>
         <Table
             @employee-handler="employeeHandler"
-            :employees="getEmployees"
         ></Table>
         <Paginator
-            :paginator="getPaginator"
             @page-handler="pageHandler"
         ></Paginator>
     </div>
@@ -47,40 +44,35 @@
         },
         mounted() {
             this.$store.dispatch('fetchAllEmployees');
-            this.$store.dispatch('fetchDepartments');
             this.$store.dispatch('fetchPositions');
         },
         computed: {
-            getEmployees() {
-                return this.$store.getters.getEmployees;
-            },
-            getPaginator() {
-                return this.$store.getters.getPaginator;
-            },
-            getDepartments() {
-                return this.$store.getters.getDepartments;
-            },
+
         },
         methods: {
-            fetchByDepartment() {
-                if(this.selectedDepartment === null) {
-                    this.$store.dispatch('fetchAllEmployees');
-                } else {
-                    this.$store.dispatch('fetchEmployeesByDepartment', this.selectedDepartment);
-                }
+            fetchEmployees() {
+                setTimeout(() => {
+                    if(this.selectedDepartment === null) {
+                        this.$store.dispatch('fetchAllEmployees');
+                    } else {
+                        this.$store.dispatch('fetchEmployeesByDepartment', this.selectedDepartment);
+                        this.$store.dispatch('fetchDirector');
+                        this.$store.dispatch('fetchManagers');
+                    }
+
+                }, 350)
+
             },
             departmentHandler(selected) { //обработчик события изменения отдела в селект боксе
                 this.selectedDepartment = selected;
-                this.fetchByDepartment();
+                this.fetchEmployees();
             },
             pageHandler(pageUrl) { //обработчик изменения страницы
                 this.currentPageUrl = pageUrl;
                 this.$store.dispatch('fetchAllEmployees', this.currentPageUrl); //this.currentPageUrl уже использует '/{id}?page=x в url
             },
             employeeHandler() {
-                this.fetchByDepartment();
-                this.$store.dispatch('fetchDirector');
-                this.$store.dispatch('fetchManagers');
+                this.fetchEmployees();
             }
         }
     }

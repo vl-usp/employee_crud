@@ -78,7 +78,7 @@
             },
         },
         methods: {
-            showAlert(message) {
+            showAlert_(message) {
                 this.alertShowed = true;
                 this.alertContent = message;
             },
@@ -86,9 +86,8 @@
             getDirector() { //возвращает директора
                 return this.$store.getters.getDirector
             },
-            getManager(department_id) { //возвращает руководителя проектами по отделу
-                return this.$store.getters.getManagers
-                    .filter(obj => (obj.department.id === department_id));
+            getManager(departmentId) { //возвращает руководителя проектами по отделу
+                return this.$store.getters.getManagerByDepartment(departmentId);
             },
 
             setDirectorBoss() { //проверяет занята ли должность директора, если нет, то устанавливает значения

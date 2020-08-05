@@ -75,7 +75,7 @@
         },
         computed: {
             getPositions() {
-                return this.$store.getters.getPositions.filter(obj => (obj.value > 1));
+                return this.$store.getters.getPositionsForEmployee;
             },
             getDepartments() {
                 return this.$store.getters.getDepartments;
@@ -90,13 +90,11 @@
             getDirector() {
                 return this.$store.getters.getDirector;
             },
-            getManager(department_id) {
-                return this.$store.getters.getManagers
-                    .filter(obj => (obj.department.id === department_id));
+            getManager(departmentId) {
+                return this.$store.getters.getManagerByDepartment(departmentId);
             },
 
             setManagerBoss() { //проверяет занята ли должность руководителя, если нет, то устанавливает значения
-                this.$store.dispatch('fetchManagers');
                 const manager = this.getManager(this.form.department_id);
                 if(Object.keys(manager).length !== 0) {
                     this.showAlert('Должность руководителя проектов в этом отделе занята');

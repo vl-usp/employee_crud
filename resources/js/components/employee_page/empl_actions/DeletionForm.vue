@@ -1,7 +1,7 @@
 <template>
     <b-form @submit="onSubmit">
         <b-alert v-model="alertShowed" dismissible variant="danger">{{ alertContent }}</b-alert>
-        <div v-if="isDeleted === false ">
+        <div>
             <p>
                 Вы действительно хотите уволить:
                 <br>
@@ -20,11 +20,6 @@
 
             <b-button type="submit" variant="danger">Удалить</b-button>
         </div>
-        <div v-else>
-            <p>
-                Сотрудник уволен.
-            </p>
-        </div>
     </b-form>
 </template>
 
@@ -33,7 +28,6 @@
         name: "DeletionForm",
         data() {
             return {
-                isDeleted: false,
                 alertShowed: false,
                 alertContent: '',
                 clickCount: 0,
@@ -71,7 +65,8 @@
                 }
                 this.$store.dispatch("destroyEmployee", this.employee.id);
                 this.$emit('employee-handler');
-                this.isDeleted = true;
+                this.$emit('show-alert', 'Сотрудник ' + this.employee.fio + ' уволен');
+                this.$bvModal.hide('deletion-modal'+this.employee.id);
             },
         }
     }

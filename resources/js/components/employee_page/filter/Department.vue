@@ -20,19 +20,16 @@
                 selected: null,
             }
         },
-        props: {
-            departments: {
-                type: Array,
-                required: true,
-            }
+        mounted() {
+            this.$store.dispatch('fetchDepartments');
         },
         computed: {
             getOptions() {
                 let all = [
                     { value: null, text: "Все" }
                 ];
-                return all.concat(this.departments);
-            }
+                return all.concat(this.$store.getters.getDepartments);
+            },
         },
         methods: {
             departmentHandler(selected) {

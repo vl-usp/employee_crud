@@ -16,7 +16,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="employee in employees"
+                        <tr v-for="employee in getEmployees"
                             :key="employee.id"
                         >
                             <th class="scope">{{ employee.fio }}</th>
@@ -44,7 +44,7 @@
                                     </svg>
                                 </b-button>
                                 <b-modal :id="'deletion-modal' + employee.id" title="Увольнение сотрудника" hide-footer centered>
-                                    <DeletionForm :employee="employee" @employee-handler="employeeHandler"></DeletionForm>
+                                    <DeletionForm :employee="employee" @employee-handler="employeeHandler" @show-alert="showAlert"></DeletionForm>
                                 </b-modal>
                             </td>
                         </tr>
@@ -68,16 +68,16 @@
                 isEmployeesExist: false,
             }
         },
-        props: {
-            employees: {
-                type: Array,
-                required: true,
-            }
-        },
         computed: {
-
+            getEmployees() {
+                return this.$store.getters.getEmployees;
+            },
         },
         methods: {
+            showAlert(message) {
+                this.alertShowed = true;
+                this.alertContent = message;
+            },
             employeeHandler() {
                 this.$emit('employee-handler');
             },

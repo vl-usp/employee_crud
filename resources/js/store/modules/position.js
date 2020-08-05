@@ -3,7 +3,7 @@ export default {
         async fetchPositions(context) {
             return axios.get('/api/position/index')
                 .then(response => {
-                    context.commit('updatePositions', response.data.data);
+                    context.commit('SET_POSITIONS', response.data.data);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -11,7 +11,7 @@ export default {
         },
     },
     mutations: {
-        updatePositions(state, positions) {
+        SET_POSITIONS(state, positions) {
             state.positions = positions;
         },
     },
@@ -22,5 +22,8 @@ export default {
         getPositions(state) {
             return state.positions;
         },
+        getPositionsForEmployee(state) {
+            return state.positions.filter(obj => (obj.value > 1))
+        }
     }
 }

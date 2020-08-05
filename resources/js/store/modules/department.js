@@ -3,12 +3,12 @@ export default {
         async fetchDepartments(context) {
             return axios.get('/api/department/index')
                 .then(response => {
-                    context.commit('updateDepartments', response.data.data);
+                    context.commit('SET_DEPARTMENTS', response.data.data);
                 })
         },
     },
     mutations: {
-        updateDepartments(state, departments) {
+        SET_DEPARTMENTS(state, departments) {
             state.departments = departments;
         },
     },
